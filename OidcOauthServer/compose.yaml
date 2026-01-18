@@ -1,0 +1,7 @@
+﻿services:
+  oidcoauth:
+    image: oidcoauth
+    build:
+      context: .
+      dockerfile: Dockerfile
+

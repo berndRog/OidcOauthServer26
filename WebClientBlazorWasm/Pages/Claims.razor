@@ -1,0 +1,22 @@
+@page "/claims"
+@using Microsoft.AspNetCore.Components.Authorization
+   @inject AuthenticationStateProvider AuthState
+
+   <h3>Claims</h3>
+
+   @code {
+private IEnumerable<System.Security.Claims.Claim> _claims = [];
+
+protected override async Task OnInitializedAsync()
+{
+   var state = await AuthState.GetAuthenticationStateAsync();
+   _claims = state.User.Claims;
+}
+}
+
+<ul>
+   @foreach (var c in _claims)
+{
+   <li><b>@c.Type</b>: @c.Value</li>
+}
+</ul>

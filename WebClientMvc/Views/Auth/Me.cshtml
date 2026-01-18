@@ -1,0 +1,30 @@
+@model WebClientMvc.Models.MeViewModel
+
+<h2>Me (OIDC Debug)</h2>
+
+<p><b>User:</b> @Model.UserName</p>
+
+<h3>Tokens (DEBUG)</h3>
+<p><b>expires_at:</b> @Model.ExpiresAt</p>
+
+<h4>id_token</h4>
+<pre style="white-space:pre-wrap">@Model.IdToken</pre>
+
+<h4>access_token</h4>
+<pre style="white-space:pre-wrap">@Model.AccessToken</pre>
+
+<h4>refresh_token</h4>
+<pre style="white-space:pre-wrap">@Model.RefreshToken</pre>
+
+<h3>Claims</h3>
+<ul>
+  @foreach (var c in Model.Claims)
+  {
+    <li><b>@c.Type</b>: @c.Value</li>
+  }
+</ul>
+
+<p>
+  <a href="/">Home</a> |
+  <a href="/logout">Logout</a>
+</p>

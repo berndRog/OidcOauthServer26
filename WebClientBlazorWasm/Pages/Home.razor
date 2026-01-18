@@ -1,0 +1,29 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Nav
+@inject IConfiguration Config
+
+<h3>OIDC Test (Blazor WASM)</h3>
+
+<AuthorizeView>
+  <Authorized>
+    <p><b>Logged in.</b></p>
+    <a href="/authentication/logout">Logout</a>
+    <br />
+    <a href="/claims">Claims</a>
+  </Authorized>
+
+  <NotAuthorized>
+    <p><b>Not logged in.</b></p>
+    <a href="/authentication/login">Login</a>
+    <br />
+
+    @* Register ist Identity UI auf dem Server *@
+    <a href="@RegisterUrl">Register (Identity UI)</a>
+  </NotAuthorized>
+</AuthorizeView>
+
+@code {
+  private string RegisterUrl => $"{Authority}/Identity/Account/Register";
+  private string Authority => (Config["AuthServer:Authority"] ?? "https://localhost:7001").TrimEnd('/');
+}

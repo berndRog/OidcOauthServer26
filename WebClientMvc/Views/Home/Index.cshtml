@@ -1,0 +1,13 @@
+﻿<h2>WebClient (anonym startend)</h2>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+  <p>Angemeldet als <b>@User.Identity.Name</b></p>
+  <a href="/me">Me (Claims)</a> 
+  <a href="/logout">Logout</a>
+}
+else
+{
+  <p>Nicht angemeldet.</p>
+  <a href="/login">Login</a>
+}
