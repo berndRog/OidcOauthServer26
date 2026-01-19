@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-
-namespace OidcOauthServer.Data;
+using OidcOauthServer.Infrastructure.Identity;
+namespace OidcOauthServer.Infrastructure.Persistence;
 
 public sealed class AuthDbContext
    : IdentityDbContext<ApplicationUser, IdentityRole, string> {

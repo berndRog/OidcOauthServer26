@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-
-namespace OidcOauthServer.Data;
+namespace OidcOauthServer.Infrastructure.Persistence;
 
 public sealed class AuthDbContextFactory : IDesignTimeDbContextFactory<AuthDbContext> {
    public AuthDbContext CreateDbContext(string[] args) {

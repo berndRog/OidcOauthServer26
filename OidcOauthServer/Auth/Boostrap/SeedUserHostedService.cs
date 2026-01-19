@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
+using OidcOauthServer.Data;
+using OidcOauthServer.Infrastructure.Identity;
 using static OidcOauthServer.Data.AdminRights;
-namespace OidcOauthServer.Data;
+namespace OidcOauthServer.Auth.Seeding;
 
 /// <summary>
 /// Seeds demo users for the course.
@@ -10,6 +12,7 @@ namespace OidcOauthServer.Data;
 /// This is course/demo-only.
 /// </summary>
 public sealed class SeedUsersHostedService : IHostedService {
+   
    private readonly IServiceProvider _sp;
 
    public SeedUsersHostedService(IServiceProvider sp) => _sp = sp;
@@ -23,52 +26,51 @@ public sealed class SeedUsersHostedService : IHostedService {
       // ----------------------------
       await EnsureUserAsync(
          users,
-         email: "customer@demo.local",
+         id: Guid.Parse("00000000-0000-0000-0001-000000000001"),
+         email: "customer@mail.local",
          password: "Customer#1234",
-         accountType: "customer",
-         customerId: Guid.Parse("00000000-0000-0000-0000-000000000101"),
-         employeeId: null,
-         adminRights: null
+         accountType: "customer"
+         // adminRights: AdminRights.None,
+         // CreatedAt = DateTime.UtcNow,
+         // UpdatedAt = DateTime.UtcNow,
       );
 
       // ----------------------------
       // Admin demo user (Employee)
       // Example rights: manage cars + bookings + customers + employees
       // ----------------------------
-      var rights =
-         (int)(ManageCars | ManageBookings | ManageCustomers | ManageEmployees);
       await EnsureUserAsync(
          users,
-         email: "bernd@mail.local",
+         id: Guid.Parse("00000000-0000-0000-0000-000000000201"),
+         email: "admin@mail.local",
          password: "Geh1m_",
          accountType: "employee",
-         customerId: null,
-         employeeId: Guid.Parse("00000000-0000-0000-0000-000000000201"),
-         adminRights: rights
+         adminRights: ManageCars | ManageBookings | ManageCustomers | ManageEmployees
+         // CreatedAt = DateTime.UtcNow,
+         // UpdatedAt = DateTime.UtcNow,
       );
    }
 
    private static async Task EnsureUserAsync(
       UserManager<ApplicationUser> users,
+      Guid id,
       string email,
       string password,
       string accountType,
-      Guid? customerId,
-      Guid? employeeId,
-      int? adminRights
+      AdminRights adminRights = AdminRights.None
    ) {
       var existing = await users.FindByEmailAsync(email);
       if (existing is not null) return;
 
       var user = new ApplicationUser {
+         Id = id.ToString(),
          UserName = email,
          Email = email,
          EmailConfirmed = true,
-
          AccountType = accountType,
-         CustomerId = customerId,
-         EmployeeId = employeeId,
          AdminRights = adminRights
+         // CreatedAt = DateTime.UtcNow
+         // UpdatedAt = DateTime.UtcNow
       };
 
       var result = await users.CreateAsync(user, password);

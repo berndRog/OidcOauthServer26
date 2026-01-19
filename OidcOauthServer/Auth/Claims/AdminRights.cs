@@ -1,7 +1,7 @@
 namespace OidcOauthServer.Data;
 
 [Flags]
-public enum AdminRights {
+public enum AdminRights: int {
    None = 0,                   // 0000 0000 0000 =    0
    // Reports
    ViewReports = 1 << 0,       // 0000 0000 0001 =    1
