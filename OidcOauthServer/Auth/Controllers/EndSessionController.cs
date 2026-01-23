@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using OidcOauthServer.Infrastructure.Identity;
 using OpenIddict.Abstractions;
 namespace OidcOauthServer.Auth.Controllers;
 
@@ -14,7 +15,7 @@ namespace OidcOauthServer.Auth.Controllers;
 [ApiController]
 public sealed class EndSessionController(
    IOpenIddictApplicationManager applicationManager,
-   SignInManager<IdentityUser> _signInManager,
+   SignInManager<ApplicationUser> _signInManager,
    ILogger<EndSessionController> logger
 ) : Controller {
    

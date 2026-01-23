@@ -58,6 +58,7 @@ public static class Program {
       ConfigureMvcAndUi(builder.Services);
 
       // Seed demo user + standard clients (Blazor, Android, Service)
+     
       builder.Services.AddHostedService<SeedUsersHostedService>();
       builder.Services.AddHostedService<SeedHostedService>();
 
