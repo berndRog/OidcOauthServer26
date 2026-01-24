@@ -23,8 +23,11 @@ public sealed class HomeController(
 
       // 3) Customer provisioning (idempotent, jedes Login ok)
       var resultProvisioned = await _customersApi.EnsureProvisionedAsync(accessToken, ct);
-      if (!resultProvisioned.IsSuccess)
       if (!resultProvisioned.IsSuccess) {
+         // Token abgelaufen / nicht mehr gültig -> neu anmelden
+         if (resultProvisioned.StatusCode is 401 or 403)
+            return Challenge();
+         
          ViewBag.ErrorTitle = resultProvisioned.Problem?.Title ?? "Provisioning failed";
          ViewBag.ErrorDetail = resultProvisioned.Problem?.Detail;
          return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
@@ -33,6 +36,10 @@ public sealed class HomeController(
       // 4) Profil laden
       var resultProfile = await _customersApi.GetMyProfileAsync(accessToken, ct);
       if (!resultProfile.IsSuccess) {
+         // Token abgelaufen / nicht mehr gültig -> neu anmelden
+         if (resultProvisioned.StatusCode is 401 or 403)
+            return Challenge();
+         
          ViewBag.ErrorTitle = resultProfile.Problem?.Title ?? "Loading customer profile failed";
          ViewBag.ErrorDetail = resultProfile.Problem?.Detail;
          return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
