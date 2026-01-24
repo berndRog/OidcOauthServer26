@@ -28,7 +28,7 @@ public sealed class SeedUsersHostedService : IHostedService {
          users,
          id: Guid.Parse("00000000-0000-0000-0001-000000000001"),
          email: "customer@mail.local",
-         password: "Customer#1234",
+         password: "Geh1m_",
          accountType: "customer"
          // adminRights: AdminRights.None,
          // CreatedAt = DateTime.UtcNow,
@@ -41,7 +41,7 @@ public sealed class SeedUsersHostedService : IHostedService {
       // ----------------------------
       await EnsureUserAsync(
          users,
-         id: Guid.Parse("00000000-0000-0000-0000-000000000201"),
+         id: Guid.Parse("00000000-0000-0000-0002-000000000001"),
          email: "admin@mail.local",
          password: "Geh1m_",
          accountType: "employee",
