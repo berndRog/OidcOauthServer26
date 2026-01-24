@@ -1,4 +1,4 @@
-namespace WebClientMvc.Models;
+namespace WebClientMvc.Models.ViewModels;
 
 public sealed record ClaimItem(string Type, string Value);
 

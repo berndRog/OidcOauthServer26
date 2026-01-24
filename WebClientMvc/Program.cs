@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using WebClientMvc;
+using WebClientMvc.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
@@ -11,6 +12,11 @@ builder.Services
    .Bind(builder.Configuration.GetSection("AuthServer"))
    .ValidateDataAnnotations()
    .ValidateOnStart();
+
+builder.Services.AddHttpClient<CustomersApiClient>(c => {
+   c.BaseAddress = new Uri("https://localhost:8010/carrentalapi/v1/");
+});
+
 
 var oidc = builder.Configuration
    .GetSection("AuthServer")
@@ -39,8 +45,7 @@ builder.Services.AddAuthentication(authOpt => {
       openIdOpt.ClientId = oidc.ClientId;
       openIdOpt.ClientSecret = clientSecret;
       openIdOpt.ResponseType = "code";
-      openIdOpt.SaveTokens = true;
-
+     
       openIdOpt.SaveTokens = true;
       openIdOpt.GetClaimsFromUserInfoEndpoint = true;
 

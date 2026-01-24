@@ -19,10 +19,11 @@ public sealed class DevTokenController(
    SignInManager<ApplicationUser> signIn,
    IOptions<AuthServerOptions> authOptions
 ) : Controller {
+
    /// <summary>
    /// Development-only token endpoint.
    ///
-   /// Allows issuing an access token by posting email + password.
+   /// Allows issuing an access token by posting email + password (+ optional ApiKey).
    /// This endpoint must NEVER exist in production environments.
    /// </summary>
    [AllowAnonymous]
@@ -37,6 +38,17 @@ public sealed class DevTokenController(
       if (string.IsNullOrWhiteSpace(dto.Email) ||
           string.IsNullOrWhiteSpace(dto.Password)) {
          return BadRequest(new { error = "email_and_password_required" });
+      }
+
+      // Resolve API scope/resource from configuration
+      var apiKey = string.IsNullOrWhiteSpace(dto.Api) ? "CarRentalApi" : dto.Api.Trim();
+
+      if (!authOptions.Value.Apis.TryGetValue(apiKey, out var api)) {
+         return BadRequest(new {
+            error = "unknown_api",
+            api = apiKey,
+            allowed = authOptions.Value.Apis.Keys.OrderBy(x => x).ToArray()
+         });
       }
 
       // Authenticate user via ASP.NET Identity
@@ -57,24 +69,15 @@ public sealed class DevTokenController(
          principal.FindFirstValue(ClaimTypes.NameIdentifier)
          ?? user.Id;
 
+      // Use "sub" claim name consistent with your APIs (IdentityClaims.Subject = "sub")
       principal.SetClaim(AuthClaims.Subject, subject);
 
-      // Domain claims
+      // Domain claims (keep minimal: sub, email, created_at, admin_rights)
       identity.AddClaim(new Claim(AuthClaims.AccountType, user.AccountType));
 
-      // if (user.CustomerId is not null)
-      //    identity.AddClaim(new Claim("customer_id", user.CustomerId.Value.ToString()));
-      //
-      // if (user.EmployeeId is not null)
-      //    identity.AddClaim(new Claim("employee_id", user.EmployeeId.Value.ToString()));
-      //
-      // if (user.AdminRights is not null)
-      //    identity.AddClaim(new Claim(AuthClaims.AdminRights, user.AdminRights.Value.ToString()));
-
-      // Scope / resource
-      var apiScope = authOptions.Value.ScopeApi;
-      principal.SetScopes(apiScope);
-      principal.SetResources(apiScope);
+      // Scope + Resource (IMPORTANT: scope != resource)
+      principal.SetScopes(api.Scope);         // e.g. "carrental_api"
+      principal.SetResources(api.Resource);   // e.g. "carrental-api"
 
       // Apply centralized destinations mapping
       foreach (var claim in principal.Claims)
@@ -89,7 +92,17 @@ public sealed class DevTokenController(
    }
 }
 
-public sealed record DevLoginDto(string Email, string Password);
+/// <summary>
+/// Dev login request.
+/// Api is optional and selects which API the access token is meant for.
+/// Example:
+///  - "CarRentalApi" -> scope=carrental_api, resource=carrental-api
+/// </summary>
+public sealed record DevLoginDto(
+   string Email,
+   string Password,
+   string? Api = "CarRentalApi"
+);
 
 /*
 ==========================================================
@@ -109,8 +122,26 @@ Das beschleunigt:
 - Mobile-Client-Entwicklung
 - Postman / curl / Integrationstests
 
-2) Warum trotzdem SignInManager + ClaimsPrincipal?
---------------------------------------------------
+2) Was ist der zentrale Lernpunkt hier?
+---------------------------------------
+"scope" und "resource/audience" sind NICHT dasselbe:
+
+- Scope  (z. B. "carrental_api")  = Berechtigung / Capability (was darf der Client?)
+- Resource (z. B. "carrental-api") = Ziel-API / Audience (für wen ist das Token gedacht?)
+
+Im Resource Server (z. B. CarRentalApi) wird typischerweise die Audience geprüft.
+
+3) Warum ApiKey im DTO?
+-----------------------
+Damit man beim Testen gezielt Tokens für verschiedene APIs ausstellen kann:
+- CarRentalApi, BankingApi, ImagesApi
+
+So bleibt das Setup skalierbar, ohne Codeänderungen in diesem Controller.
+Die Wahrheit steht in appsettings.json:
+AuthServer:Apis:{Key}:{Scope,Resource}
+
+4) Warum SignInManager + ClaimsPrincipal?
+-----------------------------------------
 Auch im Dev-Modus:
 - wird das echte Identity-System genutzt
 - entstehen realistische Claims
@@ -118,8 +149,8 @@ Auch im Dev-Modus:
 
 Kein Mocking, kein Sonderformat.
 
-3) Warum zentrale ClaimDestinations?
------------------------------------
+5) Warum zentrale ClaimDestinations?
+------------------------------------
 OpenIddict verlangt explizit:
 - welche Claims im Access Token landen
 - welche im ID Token landen
@@ -131,19 +162,11 @@ Durch die zentrale Klasse:
   - /connect/token
   - /dev/token
 
-4) Architektur-Prinzip
-----------------------
-- Identity = Authentifizierung
-- OpenIddict = Token-Ausgabe
-- Claims = Domänenwissen
-- Policies (später) = Autorisierung
-
-5) Wichtige Regel
+6) Wichtige Regel
 -----------------
 Dieser Controller darf:
 - niemals in Production aktiv sein
 - niemals echte Clients ersetzen
 - nur Entwicklung beschleunigen
-
 ==========================================================
 */

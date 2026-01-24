@@ -25,15 +25,21 @@ public static class Program {
       // ----------------------------
       builder.Services.AddOptions<AuthServerOptions>()
          .Bind(builder.Configuration.GetSection(AuthServerOptions.SectionName))
+         .Validate(o => !string.IsNullOrWhiteSpace(o.IssuerUri),
+            "AuthServer:IssuerUri is required.")
          .Validate(o => Uri.TryCreate(o.IssuerUri, UriKind.Absolute, out _),
             "AuthServer:IssuerUri must be a valid absolute URI.")
          .ValidateOnStart();
 
-      var authServer = builder.Configuration
-            .GetSection(AuthServerOptions.SectionName)
-            .Get<AuthServerOptions>()
-         ?? throw new InvalidOperationException($"Missing configuration section '{AuthServerOptions.SectionName}'.");
 
+      var authSection = builder.Configuration.GetSection(AuthServerOptions.SectionName);
+      if (!authSection.Exists())
+         throw new InvalidOperationException($"Missing configuration section '{AuthServerOptions.SectionName}'.");
+      var authServer = authSection.Get<AuthServerOptions>()!;
+      Console.WriteLine("ENV=" + builder.Environment.EnvironmentName);
+      Console.WriteLine("IssuerUri=" + authServer.IssuerUri);
+      
+      
       // ----------------------------
       // HTTP logging (dev only)
       // ----------------------------
@@ -104,10 +110,6 @@ public static class Program {
       app.MapControllers().RequireCors("Frontends");
       app.MapDefaultControllerRoute().RequireCors("Frontends");
       app.MapRazorPages().RequireCors("Frontends");
-
-      
-      Console.WriteLine("LogoutEndpointPath = " + AuthServerOptions.LogoutEndpointPath);
-      Console.WriteLine("Expected logout URL = https://localhost:7001/" + AuthServerOptions.LogoutEndpointPath);
       
       app.Run();
    }
@@ -233,9 +235,14 @@ public static class Program {
             // PKCE required for public clients
             o.RequireProofKeyForCodeExchange();
 
-            // Scopes
-            o.RegisterScopes("openid", "profile", auth.ScopeApi);
-
+            // Scopes (standard + configured API scopes)
+            o.RegisterScopes(
+               new[] { "openid", "profile" }
+                  .Concat(auth.Apis.Values.Select(a => a.Scope))
+                  .Distinct(StringComparer.Ordinal)
+                  .ToArray()
+            );
+            
             // Dev certs
             o.AddDevelopmentEncryptionCertificate()
                .AddDevelopmentSigningCertificate();

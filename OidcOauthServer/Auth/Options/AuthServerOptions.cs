@@ -17,7 +17,7 @@ public sealed class AuthServerOptions {
    /// OIDC issuer URI (must end with slash).
    /// Example: https://localhost:7001/
    /// </summary>
-   public string IssuerUri { get; init; } = "https://localhost:7001/";
+   public string IssuerUri { get; init; } = string.Empty;
 
    /// <summary>
    /// Derived authority base URL (same as issuer, but as string).
@@ -47,50 +47,43 @@ public sealed class AuthServerOptions {
    public const string UserInfoEndpointPath = ConnectPrefix + "/userinfo";
    public const string LogoutEndpointPath = ConnectPrefix + "/logout";
 
-   // Scopes
+   // APIs (Resources + Scopes)
    // ------------------------------------------------------------------
-   public string ScopeApi { get; init; } = "api";
-
+   public Dictionary<string, ApiOptions> Apis { get; init; } = new();
+   
+   // Convenience accessors for known APIs
+   // ----------------------------------------------------------------
+   public ApiOptions CarRentalApi => Apis["CarRentalApi"];
+   public ApiOptions BankingApi   => Apis["BankingApi"];
+   public ApiOptions ImagesApi    => Apis["ImagesApi"];
+   
    // Clients
    // ------------------------------------------------------------------
    public ClientOptions BlazorWasm { get; init; } = default!;
    public ClientOptions WebMvc { get; init; } = default!;
    public AndroidClientOptions Android { get; init; } = default!;
    public ClientOptions ServiceClient { get; init; } = default!;
-
-   // ------------------------------------------------------------------
+   
    // Derived redirect URIs
    // ------------------------------------------------------------------
-   public Uri ConfigurationEndpointUri =>
-      new(Issuer, ConfigurationEndpointPath);
-
-   public Uri AuthorizationEndpointUri =>
-      new(Issuer, AuthorizationEndpointPath);
-
-   public Uri TokenEndpointUri =>
-      new(Issuer, TokenEndpointPath);
-
-   public Uri UserInfoEndpointUri =>
-      new(Issuer, UserInfoEndpointPath);
-
-   public Uri LogoutEndpointUri =>
-      new(Issuer, LogoutEndpointPath);
-
+   public Uri ConfigurationEndpointUri => new(Issuer, ConfigurationEndpointPath);
+   public Uri AuthorizationEndpointUri => new(Issuer, AuthorizationEndpointPath);
+   public Uri TokenEndpointUri => new(Issuer, TokenEndpointPath);
+   public Uri UserInfoEndpointUri => new(Issuer, UserInfoEndpointPath);
+   public Uri LogoutEndpointUri => new(Issuer, LogoutEndpointPath);
+   
    public Uri BlazorWasmRedirectUri() =>
       CombineBaseAndPath(BlazorWasm.BaseUrl, BlazorWasm.RedirectPath);
-
    public Uri BlazorWasmPostLogoutRedirectUri() =>
       CombineBaseAndPath(BlazorWasm.BaseUrl, BlazorWasm.PostLogoutRedirectPath);
 
    public Uri WebMvcRedirectUri() =>
       CombineBaseAndPath(WebMvc.BaseUrl, WebMvc.RedirectPath);
-
    public Uri WebMvcPostLogoutRedirectUri() =>
       CombineBaseAndPath(WebMvc.BaseUrl, WebMvc.PostLogoutRedirectPath);
    
    public Uri AndroidCustomSchemeRedirectUri() =>
       new (Android.CustomSchemeRedirectUriString, UriKind.Absolute);
-
    public Uri AndroidLoopbackRedirectUri() =>
       new (Android.LoopbackRedirectUriString, UriKind.Absolute);
    

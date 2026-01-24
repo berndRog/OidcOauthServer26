@@ -1,13 +1,20 @@
-﻿<h2>WebClient (anonym startend)</h2>
+﻿@model WebClientMvc.Models.Dtos.CustomerProfileDto?
 
-@if (User.Identity?.IsAuthenticated == true)
-{
+<h2>WebClient (anonym startend)</h2>
+
+@if (User.Identity?.IsAuthenticated == true) {
   <p>Angemeldet als <b>@User.Identity.Name</b></p>
-  <a href="/me">Me (Claims)</a> 
+  <a href="/me">Me (Claims)</a>
   <a href="/logout">Logout</a>
+
+  @* optional: Profil anzeigen *@
+  @if (Model is not null) {
+    <hr/>
+    <p>Profil: @Model.FirstName @Model.LastName</p>
+    <a href="/profile/edit">Profil bearbeiten</a>
+  }
 }
-else
-{
+else {
   <p>Nicht angemeldet.</p>
   <a href="/login">Login</a>
 }
