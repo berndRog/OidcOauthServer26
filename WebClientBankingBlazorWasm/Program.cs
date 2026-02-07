@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using WebClientBlazorWasm;
+using WebClientBankingBlazorWasm;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 
@@ -23,7 +23,7 @@ if (scopes.Length == 0) {
 }
 
 // Default HttpClient
-builder.Services.AddHttpClient("WebClientBlazorWasm",
+builder.Services.AddHttpClient("WebClientBankingBlazorWasm",
    client => { client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress); });
 
 builder.Services.AddOidcAuthentication(options => {
@@ -37,7 +37,7 @@ builder.Services.AddOidcAuthentication(options => {
    }  
 });
 
-Console.WriteLine("WebClientBlazorWasm starting...");
+Console.WriteLine("WebClientBankingBlazorWasm starting...");
 Console.WriteLine($"AuthServer:Authority={authority}");
 Console.WriteLine($"AuthServer:ClientId={clientId}");
 Console.WriteLine($"Scopes: {string.Join(", ", scopes)}");

@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OidcOauthServer", "OidcOaut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClientMvc", "WebClientMvc\WebClientMvc.csproj", "{D80A3D51-B02C-40B1-ADE0-C2D11AED9161}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClientBlazorWasm", "WebClientBlazorWasm\WebClientBlazorWasm.csproj", "{6E0A2FA7-5373-480D-9E44-7CF5817A7B45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClientBankingBlazorWasm", "WebClientBankingBlazorWasm\WebClientBankingBlazorWasm.csproj", "{6E0A2FA7-5373-480D-9E44-7CF5817A7B45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClientBankingBlazorSSR", "WebClientBankingBlazorSSR\WebClientBankingBlazorSSR.csproj", "{2BD11188-64AB-4ADB-8628-9D10EF774EC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,5 +31,9 @@ Global
 		{6E0A2FA7-5373-480D-9E44-7CF5817A7B45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E0A2FA7-5373-480D-9E44-7CF5817A7B45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E0A2FA7-5373-480D-9E44-7CF5817A7B45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BD11188-64AB-4ADB-8628-9D10EF774EC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BD11188-64AB-4ADB-8628-9D10EF774EC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BD11188-64AB-4ADB-8628-9D10EF774EC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BD11188-64AB-4ADB-8628-9D10EF774EC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
