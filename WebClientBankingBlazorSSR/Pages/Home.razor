@@ -1,0 +1,51 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject WebClientBankingBlazorSSR.Hosting.Clients.OwnersClient Owners
+
+<PageTitle>Home</PageTitle>
+
+<h3>Owner</h3>
+
+@if (_loading)
+{
+  <p>Lade …</p>
+}
+else if (_error is not null)
+{
+  <div class="alert alert-danger">@_error</div>
+}
+else
+{
+  <p><b>OwnerId:</b> @_me!.Id</p>
+  <p><b>Email:</b> @_me!.Email</p>
+  <p><b>Status:</b> @_me!.Status</p>
+
+  <hr />
+  <p><b>Name:</b> @_profile!.Firstname @_profile!.Lastname</p>
+}
+
+@code {
+  private bool _loading = true;
+  private string? _error;
+
+  private WebClientBankingBlazorSSR.Hosting.Dtos.OwnerMeDto? _me;
+  private WebClientBankingBlazorSSR.Hosting.Dtos.OwnerProfileDto? _profile;
+
+  protected override async Task OnInitializedAsync()
+  {
+    try
+    {
+      _me = await Owners.GetMeProvisionedAsync();
+      _profile = await Owners.GetMeProfileAsync();
+    }
+    catch (Exception ex)
+    {
+      _error = ex.Message;
+    }
+    finally
+    {
+      _loading = false;
+    }
+  }
+}

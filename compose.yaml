@@ -1,0 +1,7 @@
+﻿services:
+  webclientblazorssr:
+    image: webclientblazorssr
+    build:
+      context: .
+      dockerfile: WebClientBlazorSSR/Dockerfile
+
