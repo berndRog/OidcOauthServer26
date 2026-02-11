@@ -71,29 +71,38 @@ public class IdentityController(
    /// - The final UX destination ("/") is handled by SignedOut().
    /// </summary>
    /// <returns>Empty result (OIDC middleware performs the redirect to the auth server).</returns>
+   // [HttpGet("logout")]
+   // public async Task<IActionResult> Logout() {
+   //    logger.LogInformation("Logout requested for user: {User}", User.Identity?.Name ?? "(anonymous)");
+   //
+   //    // After the OIDC middleware completed the sign-out callback,
+   //    // it will redirect the browser to this final UX destination.
+   //    var props = new AuthenticationProperties {
+   //       RedirectUri = "/"
+   //    };
+   //
+   //    // Step 1: end local session (remove the authentication cookie for this client app)
+   //    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+   //
+   //    // Step 2: trigger OIDC end-session (redirect to authorization server)
+   //    await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, props);
+   //    
+   //    
+   //    // The OIDC middleware will handle the redirect to the authorization server.
+   //    return new EmptyResult();
+   //    
+   // }
+   
    [HttpGet("logout")]
-   public async Task<IActionResult> Logout() {
-      logger.LogInformation("Logout requested for user: {User}", User.Identity?.Name ?? "(anonymous)");
-
-      // After the OIDC middleware completed the sign-out callback,
-      // it will redirect the browser to this final UX destination.
-      var props = new AuthenticationProperties {
-         RedirectUri = "/"
-      };
-
-      // Step 1: end local session (remove the authentication cookie for this client app)
-      await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-      // Step 2: trigger OIDC end-session (redirect to authorization server)
-      await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, props);
-      
-      
-      // The OIDC middleware will handle the redirect to the authorization server.
-      new EmptyResult();
-      
-      return LocalRedirect("/");
-      
+   public IActionResult Logout()
+   {
+      return SignOut(
+         new AuthenticationProperties { RedirectUri = "/" },
+         OpenIdConnectDefaults.AuthenticationScheme,
+         CookieAuthenticationDefaults.AuthenticationScheme
+      );
    }
+
 
    // /// <summary>
    // /// Technical callback endpoint after OIDC logout.

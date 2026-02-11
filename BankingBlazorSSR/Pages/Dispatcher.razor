@@ -1,39 +1,5 @@
 @page "/dispatcher"
 @using Microsoft.AspNetCore.Authorization
-@inject IHttpContextAccessor Hca
 @attribute [AllowAnonymous]
 
-@code {
-
-  protected override void OnInitialized() {
-    var http = Hca.HttpContext!;
-    var user = http.User;
-
-    if (user?.Identity?.IsAuthenticated != true) {
-      http.Response.Redirect("/identity/login?returnUrl=%2F");
-      return;
-    }
-
-    // DEBUG: Log all claims
-    var claims = user.Claims.Select(c => $"{c.Type}={c.Value}").ToList();
-    Console.WriteLine("=== User Claims ===");
-    foreach (var claim in claims) {
-      Console.WriteLine(claim);
-    }
-    Console.WriteLine($"IsInRole(Owner): {user.IsInRole("Owner")}");
-    Console.WriteLine($"IsInRole(Employee): {user.IsInRole("Employee")}");
-
-    if (user.IsInRole("Owner")) {
-      http.Response.Redirect("/owner");
-      return;
-    }
-
-    if (user.IsInRole("Employee")) {
-      http.Response.Redirect("/employee");
-      return;
-    }
-
-    http.Response.Redirect("/no-access");
-  }
-
-}
+<h3>Weiterleitung...</h3>

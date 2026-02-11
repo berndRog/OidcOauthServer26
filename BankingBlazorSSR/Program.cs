@@ -169,6 +169,20 @@ public sealed class Program {
             options.CallbackPath = auth["CallbackPath"] ?? "/signin-oidc";
             options.SignedOutCallbackPath =
                auth["SignedOutCallbackPath"] ?? "/signout-callback-oidc";
+            options.SignedOutRedirectUri = "/";   // 
+
+            
+            Console.WriteLine($"CallbackPath={options.CallbackPath}, SignedOutCallbackPath={options.SignedOutCallbackPath}");
+
+            options.Events ??= new OpenIdConnectEvents();
+            options.Events.OnSignedOutCallbackRedirect = context => {
+               // Final UX destination after the technical callback
+               context.Response.Redirect("/");
+               context.HandleResponse();
+               return Task.CompletedTask;
+            };
+
+            
             // Keep tokens in the auth session (cookie ticket)
             options.SaveTokens = true;
 
