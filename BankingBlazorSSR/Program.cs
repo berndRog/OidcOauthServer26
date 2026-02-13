@@ -146,9 +146,8 @@ public sealed class Program {
       .AddHttpMessageHandler<AccessTokenHandler>();
 
       services.AddScoped<OwnerClient>();
+      services.AddScoped<EmployeeClient>();
       services.AddScoped<AccountClient>();
-      services.AddScoped<BeneficiaryClient>();
-      
    }
    
    /// <summary>
@@ -219,7 +218,8 @@ public sealed class Program {
             // Map name and roles to your claim types
             options.TokenValidationParameters = new TokenValidationParameters {
                NameClaimType = "preferred_username", 
-               RoleClaimType = "role"
+               RoleClaimType = ClaimTypes.Role 
+//               RoleClaimType = "role"
             };
             
             //options.RequireHttpsMetadata = true;

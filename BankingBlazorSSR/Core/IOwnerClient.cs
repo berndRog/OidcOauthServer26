@@ -1,3 +1,4 @@
+using BankingBlazorSsr.Api.Dtos;
 using BankingBlazorSsr.Core.Dto;
 namespace BankingBlazorSsr.Core;
 

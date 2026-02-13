@@ -65,7 +65,8 @@
 @code {
   // Login mit ReturnUrl (aktuelle Seite)
   private string LoginUrl =>
-    "/identity/login?returnUrl=" + Uri.EscapeDataString("/" + Nav.ToBaseRelativePath(Nav.Uri));
+    "/identity/login?returnUrl=" + Uri.EscapeDataString("/entry");
+
 
   // serverseitiger Logout (Cookie + OIDC)
   private string LogoutUrl => "/identity/logout";

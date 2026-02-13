@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Forms;
 namespace BankingBlazorSsr.Ui.Pages.Owner;
 
 public partial class OwnerProfilePage {  // dont't use : BasePage here 
+   
    // Property injection for Blazor components
    [Inject] private OwnerClient OwnerClient { get; set; } = default!;
    [Inject] private NavigationManager Navigation { get; set; } = default!;
@@ -18,7 +19,7 @@ public partial class OwnerProfilePage {  // dont't use : BasePage here
    private string? _saveError;
    private string? _saveOk;
 
-   private OwnerProfileDto _ownerProfileDto = new();
+   private OwnerDto _ownerDto = new();
    private EditContext _editContext = default!;
 
    protected override async Task OnInitializedAsync() {
@@ -31,21 +32,21 @@ public partial class OwnerProfilePage {  // dont't use : BasePage here
 
       // Load profile (Result pattern)
       var result = await OwnerClient.GetProfileAsync();
-
       if (result.IsFailure) {
          HandleError(result.Error!); // BasePage navigation + ErrorMessage
+         Loading = false;
          return;
       }
 
-      _ownerProfileDto = result.Value ?? new OwnerProfileDto();
-      Logger.LogDebug("Loaded owner profile: {@Profile}", _ownerProfileDto);
+      _ownerDto = result.Value ?? new OwnerDto();
+      Logger.LogDebug("Loaded owner profile: {@Profile}", _ownerDto);
 
       RebuildEditContext();
       Loading = false;
    }
 
    private void RebuildEditContext() {
-      _editContext = new EditContext(_ownerProfileDto);
+      _editContext = new EditContext(_ownerDto);
 
       _editContext.OnValidationStateChanged += (_, __) =>
          _showGlobalErrors = _editContext.GetValidationMessages().Any();
@@ -65,9 +66,9 @@ public partial class OwnerProfilePage {  // dont't use : BasePage here
          return;
       }
 
-      Logger.LogDebug("Update owner profile: {@Profile}", _ownerProfileDto);
+      Logger.LogDebug("Update owner profile: {@Profile}", _ownerDto);
 
-      var result = await OwnerClient.UpdateProfileAsync(_ownerProfileDto);
+      var result = await OwnerClient.UpdateProfileAsync(_ownerDto);
 
       if (result.IsFailure) {
          // For 401/403/404 this will navigate away; for 409/422 it sets ErrorMessage
@@ -89,10 +90,13 @@ public partial class OwnerProfilePage {  // dont't use : BasePage here
       }
 
       // Success: API returned updated profile in body
-      _ownerProfileDto = result.Value ?? _ownerProfileDto;
+      _ownerDto = result.Value ?? _ownerDto;
       RebuildEditContext();
 
       _saveOk = "Gespeichert.";
       _saving = false;
+      
+      Navigation.NavigateTo($"/owners/{_ownerDto.Id}");
+      
    }
 }

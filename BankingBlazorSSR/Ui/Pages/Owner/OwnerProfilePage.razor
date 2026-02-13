@@ -1,4 +1,4 @@
-@page "/owner/profile"
+@page "/owners/profile"
 @using Microsoft.AspNetCore.Authorization
 @using System.ComponentModel.DataAnnotations
 @using BankingBlazorSsr.Api.Clients
@@ -41,26 +41,26 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="form-floating">
-                                <InputText @bind-Value="_ownerProfileDto.Firstname" class="form-control"/>
+                                <InputText @bind-Value="_ownerDto.Firstname" class="form-control"/>
                                 <label>Vorname</label>
                             </div>
-                            <ValidationMessage For="@(() => _ownerProfileDto.Firstname)" class="text-danger small"/>
+                            <ValidationMessage For="@(() => _ownerDto.Firstname)" class="text-danger small"/>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-floating">
-                                <InputText @bind-Value="_ownerProfileDto.Lastname" class="form-control"/>
+                                <InputText @bind-Value="_ownerDto.Lastname" class="form-control"/>
                                 <label>Nachname</label>
                             </div>
-                            <ValidationMessage For="@(() => _ownerProfileDto.Lastname)" class="text-danger small"/>
+                            <ValidationMessage For="@(() => _ownerDto.Lastname)" class="text-danger small"/>
                         </div>
 
                         <div class="col-12">
                             <div class="form-floating">
-                                <InputText @bind-Value="_ownerProfileDto.Email" class="form-control"/>
+                                <InputText @bind-Value="_ownerDto.Email" class="form-control"/>
                                 <label>E-Mail</label>
                             </div>
-                            <ValidationMessage For="@(() => _ownerProfileDto.Email)" class="text-danger small"/>
+                            <ValidationMessage For="@(() => _ownerDto.Email)" class="text-danger small"/>
                             <div class="form-text">
                                 Diese E-Mail stammt aus dem Login und kann angepasst werden.
                             </div>
@@ -77,34 +77,34 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="form-floating">
-                                <InputText @bind-Value="_ownerProfileDto.Street" class="form-control"/>
+                                <InputText @bind-Value="_ownerDto.Street" class="form-control"/>
                                 <label>Straße</label>
                             </div>
-                            <ValidationMessage For="@(() => _ownerProfileDto.Street)" class="text-danger small"/>
+                            <ValidationMessage For="@(() => _ownerDto.Street)" class="text-danger small"/>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-floating">
-                                <InputText @bind-Value="_ownerProfileDto.PostalCode" class="form-control"/>
+                                <InputText @bind-Value="_ownerDto.PostalCode" class="form-control"/>
                                 <label>PLZ</label>
                             </div>
-                            <ValidationMessage For="@(() => _ownerProfileDto.PostalCode)" class="text-danger small"/>
+                            <ValidationMessage For="@(() => _ownerDto.PostalCode)" class="text-danger small"/>
                         </div>
 
                         <div class="col-md-8">
                             <div class="form-floating">
-                                <InputText @bind-Value="_ownerProfileDto.City" class="form-control"/>
+                                <InputText @bind-Value="_ownerDto.City" class="form-control"/>
                                 <label>Ort</label>
                             </div>
-                            <ValidationMessage For="@(() => _ownerProfileDto.City)" class="text-danger small"/>
+                            <ValidationMessage For="@(() => _ownerDto.City)" class="text-danger small"/>
                         </div>
 
                         <div class="col-md-6">
                             <div class="form-floating">
-                                <InputText @bind-Value="_ownerProfileDto.Country" class="form-control"/>
+                                <InputText @bind-Value="_ownerDto.Country" class="form-control"/>
                                 <label>Land</label>
                             </div>
-                            <ValidationMessage For="@(() => _ownerProfileDto.Country)" class="text-danger small"/>
+                            <ValidationMessage For="@(() => _ownerDto.Country)" class="text-danger small"/>
                         </div>
                     </div>
 

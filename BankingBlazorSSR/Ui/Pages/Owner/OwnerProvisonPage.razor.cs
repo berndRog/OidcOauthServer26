@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using BankingBlazorSsr.Api.Clients;
+using BankingBlazorSsr.Api.Dtos;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -20,6 +21,8 @@ public partial class OwnerProvisonPage { // dont't use : BasePage here
    private List<(string Key, string Value)> _idTokenLines = [];
    private List<(string Key, string Value)> _accessTokenLines = [];
    private List<(string Type, string Value)> _idTokenClaims = [];
+   
+   private ProvisionDto _provision = default!;
 
    protected override async Task OnInitializedAsync() {
 
@@ -47,17 +50,27 @@ public partial class OwnerProvisonPage { // dont't use : BasePage here
       var resultProvision = await Client.PostProvisionAsync(CancellationToken.None);
       if (resultProvision.IsFailure) {
          HandleError(resultProvision.Error!);
+         Loading = false;
          return;
       }
+      _provision = resultProvision.Value;
+      
+      Loading = false;
+   }
+
+   private void ContinueToProfile() {
       // is the profile just provisioned? if so, navigate to profile page
-      if (resultProvision.Value?.ShowProfile ?? false) {
+      if (_provision?.ShowProfile ?? false) {
          Logger.LogInformation("Owner just provisioned");
          // profile must be shown to update it, navigate to profile page
-         NavigationManager.NavigateTo("/owner/profile");
-         return;
+         NavigationManager.NavigateTo("/owners/profile");
       }
-
-      Loading = false;
+      else {
+         Logger.LogInformation("Owner already provisioned");
+         // profile already exists, navigate to home page
+         var id = _provision.Id;
+         NavigationManager.NavigateTo("$/owners/{id}");
+      }
    }
 
    private static List<(string Key, string Value)> DecodeJwtToLines(string? jwt) {

@@ -1,19 +1,20 @@
-@* @page "/owner/{Id:guid}" *@
-@* @using Microsoft.AspNetCore.Authorization *@
-@* *@
+@page "/owners/{Id:guid}"
+@using Microsoft.AspNetCore.Authorization
+@inherits BankingBlazorSsr.Ui.Common.BasePage
 @* @attribute [Authorize(Policy = "CombinedPolicy")] *@
-@* <div class="container mt-3"> *@
-@*   @if (!string.IsNullOrEmpty(_errorMessage)) { *@
-@*     <div class="alert alert-danger">@_errorMessage</div> *@
-@*   } *@
-@*   <div class="row"> *@
-@*     <div class="col-12 mb-1 me-md-1"> *@
-@*       <OwnerCard Owner="@_ownerDto" /> *@
-@*     </div> *@
-@* *@
-@*     <div class="col-12 mb-1"> *@
-@*       <AccountsTable Accounts="@_accountDtos" OnOpenAccount="OpenAccount" /> *@
-@*     </div> *@
-@* *@
-@*   </div> *@
-@* </div> *@
+
+<div class="container mt-3">
+  @if (!string.IsNullOrEmpty(_errorMessage)) {
+    <div class="alert alert-danger">@_errorMessage</div>
+  }
+  <div class="row">
+    <div class="col-12 mb-1 me-md-1">
+      <OwnerCard Owner="@_ownerDto" />
+    </div>
+
+    <div class="col-12 mb-1">
+      <AccountsTable Accounts="@_accountDtos" OnOpenAccount="OpenAccount" />
+    </div>
+
+  </div>
+</div>

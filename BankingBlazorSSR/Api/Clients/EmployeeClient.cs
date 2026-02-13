@@ -4,13 +4,13 @@ using BankingBlazorSsr.Core;
 using BankingBlazorSsr.Core.Dto;
 namespace BankingBlazorSsr.Api.Clients;
 
-public sealed class OwnerClient(
+public sealed class EmployeeClient(
    IHttpClientFactory factory,
    JsonSerializerOptions json,
-   ILogger<OwnerClient> logger
-) : BaseApiClient<OwnerClient>(factory, json, logger)
+   ILogger<EmployeeClient> logger
+) : BaseApiClient<EmployeeClient>(factory, json, logger)
 {
-   private const string MeBase = "bankingapi/v1/owners/me";
+   private const string MeBase = "bankingapi/v1/employee/me";
 
    // POST bankingapi/v1/owners/me/provisioned  -> 200 OK + OwnerProvisionDto
    public Task<Result<ProvisionDto>> PostProvisionAsync(CancellationToken ct = default) 
@@ -18,14 +18,14 @@ public sealed class OwnerClient(
          () => _http.PostAsync($"{MeBase}/provisioned", content: null, ct), ct);
 
    // GET bankingapi/v1/owners/me/profile -> 200 OK + OwnerProfileDto
-   public Task<Result<OwnerDto>> GetProfileAsync(CancellationToken ct = default) 
-      => SendAsync<OwnerDto>(() => _http.GetAsync($"{MeBase}/profile", ct), ct);
+   public Task<Result<EmployeeDto>> GetProfileAsync(CancellationToken ct = default) 
+      => SendAsync<EmployeeDto>(() => _http.GetAsync($"{MeBase}/profile", ct), ct);
 
    // PUT bankingapi/v1/owners/me/profile -> 200 OK + OwnerProfileDto
-   public Task<Result<OwnerDto>> UpdateProfileAsync(
+   public Task<Result<EmployeeDto>> UpdateProfileAsync(
       OwnerDto dto,
       CancellationToken ct = default
-   ) => SendAsync<OwnerDto>(
+   ) => SendAsync<EmployeeDto>(
          () => _http.PutAsJsonAsync($"{MeBase}/profile", dto, ct), ct);
 
    // GET /owners

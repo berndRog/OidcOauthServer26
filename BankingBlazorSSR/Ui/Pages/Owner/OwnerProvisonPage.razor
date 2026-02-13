@@ -1,4 +1,4 @@
-@page "/owner/provision"
+@page "/owners/provision"
 @using Microsoft.AspNetCore.Authorization
 @inherits BankingBlazorSsr.Ui.Common.BasePage
 @attribute [Authorize(Policy = "OwnersOnly")]
@@ -11,7 +11,10 @@
 }
 else
 {
-
+  <button class="btn btn-primary" @onclick="ContinueToProfile">
+    Weiter zum Profil
+  </button>
+  
   <h3>ID Token (vom Identity Provider)</h3>
   <pre>@_idToken</pre>
   <table class="table table-sm table-striped">
