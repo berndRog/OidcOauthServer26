@@ -1,4 +1,4 @@
-@using BankingBlazorSsr.Core.Dto
+@using BankingBlazorSsr.Api.Dtos
 <div class="container-fluid mt-3">
   <div class="card shadow-sm w-100">  <!-- full width -->
 
@@ -23,10 +23,9 @@
               <tr class="align-middle p-0">
                 <td>@owner.Firstname</td>
                 <td>@owner.Lastname</td>
+                <td>@owner?.CompanyName</td>
                 <td>@owner.Email</td>
-                <td>@owner.UserName</td>
                 <td>@owner.Id</td>
-                <td>@owner.UserId</td>
                 <td>
                   <button class="btn btn-primary btn-sm" @onclick="() => OnOpenOwner.InvokeAsync(owner.Id)">
                     Kontoinhaber öffnen

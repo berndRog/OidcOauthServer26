@@ -1,6 +1,5 @@
-using BankingBlazorSsr.Api;
+using BankingBlazorSsr.Api.Dtos;
 using BankingBlazorSsr.Core;
-using BankingBlazorSsr.Core.Dto;
 using BankingBlazorSsr.Ui.Common;
 using Microsoft.AspNetCore.Components;
 namespace BankingBlazorSsr.Ui.Pages.Owner;
