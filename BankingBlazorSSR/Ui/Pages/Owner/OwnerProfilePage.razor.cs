@@ -6,60 +6,119 @@ using Microsoft.AspNetCore.Components.Forms;
 
 namespace BankingBlazorSsr.Ui.Pages.Owner;
 
-public partial class OwnerProfilePage {  // dont't use : BasePage here 
-   
-   // Property injection for Blazor components
+/// <summary>
+/// Owner profile edit page.
+/// Demonstrates form state handling, validation lifecycle,
+/// navigation semantics (Back vs Cancel), and API error handling.
+/// </summary>
+public partial class OwnerProfilePage {
+
+   // ---- Dependency Injection ------------------------------------------------
    [Inject] private OwnerClient OwnerClient { get; set; } = default!;
    [Inject] private NavigationManager Navigation { get; set; } = default!;
    [Inject] private ILogger<OwnerProfilePage> Logger { get; set; } = default!;
-
+   // ---- Navigation Context --------------------------------------------------
+   // Optional return URL (passed via query string)
+   // After Save or Leave navigation returns here instead of fixed route
+   [Parameter, SupplyParameterFromQuery]
+   public string? Return { get; set; }
+   // ---- UI State ------------------------------------------------------------
    private bool _saving;
    private bool _showGlobalErrors;
-
    private string? _saveError;
    private string? _saveOk;
-
+   // ---- Form Model ----------------------------------------------------------
+   // Current editable model
    private OwnerDto _ownerDto = new();
+   // Snapshot of original state (used for Cancel)
+   private OwnerDto _originalOwnerDto = new();
+   // Blazor form state manager
    private EditContext _editContext = default!;
 
+   // -------------------------------------------------------------------------
+   // Initialization
+   // -------------------------------------------------------------------------
    protected override async Task OnInitializedAsync() {
-      // BasePage state
-      Loading = true; 
-      ErrorMessage = null; 
-      
-      // Create EditContext for the initial instance
+
+      Loading = true;
+      ErrorMessage = null;
+
+      // Create initial EditContext so form can render immediately
       RebuildEditContext();
 
-      // Load profile (Result pattern)
+      // Load profile from API (Result pattern)
       var result = await OwnerClient.GetProfileAsync();
       if (result.IsFailure) {
-         HandleError(result.Error!); // BasePage navigation + ErrorMessage
+         HandleError(result.Error!);
          Loading = false;
          return;
       }
 
       _ownerDto = result.Value ?? new OwnerDto();
+
+      // Store snapshot for Cancel
+      _originalOwnerDto = Clone(_ownerDto);
+
       Logger.LogDebug("Loaded owner profile: {@Profile}", _ownerDto);
 
+      // Recreate EditContext because model instance changed
       RebuildEditContext();
       Loading = false;
    }
 
-   private void RebuildEditContext() {
-      _editContext = new EditContext(_ownerDto);
 
-      _editContext.OnValidationStateChanged += (_, __) =>
-         _showGlobalErrors = _editContext.GetValidationMessages().Any();
+   // -------------------------------------------------------------------------
+   // Form Lifecycle
+   // -------------------------------------------------------------------------
+   /// <summary>
+   /// Recreates EditContext when model instance changes.
+   /// Important: Validation state belongs to EditContext, not the model.
+   /// </summary>
+   private void RebuildEditContext() {
+      if (_editContext != null)
+         _editContext.OnValidationStateChanged -= ValidationChanged;
+
+      _editContext = new EditContext(_ownerDto);
+      _editContext.OnValidationStateChanged += ValidationChanged;
    }
 
-   private void Cancel() => Navigation.NavigateTo("/");
+   private void ValidationChanged(object? sender, ValidationStateChangedEventArgs e) {
+      _showGlobalErrors = _editContext.GetValidationMessages().Any();
+   }
+   
+   // -------------------------------------------------------------------------
+   // Navigation semantics
+   // -------------------------------------------------------------------------
+   /// <summary>
+   /// Cancel = discard changes and stay in application context.
+   /// No persistence operation.
+   /// </summary>
+   private void Cancel() {
+      _ownerDto = Clone(_originalOwnerDto);
+      RebuildEditContext();
+      _saveError = null;
+      _saveOk = null;
+   }
 
+   /// <summary>
+   /// Leave = navigate away from page.
+   /// Uses return URL if available.
+   /// </summary>
+   private void GoBack() => Navigation.NavigateTo(Return ?? "/owners");
+
+
+   // -------------------------------------------------------------------------
+   // Save operation
+   // -------------------------------------------------------------------------
+   /// <summary>
+   /// Validates form, sends update to API and handles domain/API errors.
+   /// </summary>
    private async Task SaveAsync() {
       _saving = true;
       _saveError = null;
       _saveOk = null;
 
-      // Optional: don’t call API if form invalid
+      // Prevent API call if invalid
       if (!_editContext.Validate()) {
          _showGlobalErrors = true;
          _saving = false;
@@ -71,32 +130,51 @@ public partial class OwnerProfilePage {  // dont't use : BasePage here
       var result = await OwnerClient.UpdateProfileAsync(_ownerDto);
 
       if (result.IsFailure) {
-         // For 401/403/404 this will navigate away; for 409/422 it sets ErrorMessage
-         // Here we want a save-specific message on the same page:
+
          var err = result.Error!;
          Logger.LogWarning("Save failed {Status}: {Title}", err.Status, err.Title);
 
-         // If you want *only* inline save error (no redirect), handle 409/422 here:
+         // Business validation errors stay on page
          if (err.Status is 409 or 422) {
             _saveError = err.Detail ?? err.Title;
             _saving = false;
             return;
          }
 
-         // Otherwise use global handler (may redirect)
+         // Authentication / authorization / not found handled globally
          HandleError(err);
          _saving = false;
          return;
       }
 
-      // Success: API returned updated profile in body
+      // Success: API returned updated entity
       _ownerDto = result.Value ?? _ownerDto;
       RebuildEditContext();
 
-      _saveOk = "Gespeichert.";
+      _saveOk = "Saved.";
       _saving = false;
-      
+
+      // After successful save navigate to detail view
       Navigation.NavigateTo($"/owners/{_ownerDto.Id}");
-      
    }
+
+
+   // -------------------------------------------------------------------------
+   // Helper
+   // -------------------------------------------------------------------------
+   /// <summary>
+   /// DTO clone used to restore form state after Cancel.
+   /// DTO cloning is acceptable because DTOs are data containers,
+   /// not domain entities.
+   /// </summary>
+   private static OwnerDto Clone(OwnerDto src) => new() {
+      Id = src.Id,
+      Firstname = src.Firstname,
+      Lastname = src.Lastname,
+      Email = src.Email,
+      Street = src.Street,
+      PostalCode = src.PostalCode,
+      City = src.City,
+      Country = src.Country
+   };
 }

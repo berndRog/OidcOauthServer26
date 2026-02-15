@@ -53,7 +53,7 @@ public partial class OwnerProvisonPage { // dont't use : BasePage here
          Loading = false;
          return;
       }
-      _provision = resultProvision.Value;
+      _provision = resultProvision.Value!;
       
       Loading = false;
    }
@@ -68,8 +68,8 @@ public partial class OwnerProvisonPage { // dont't use : BasePage here
       else {
          Logger.LogInformation("Owner already provisioned");
          // profile already exists, navigate to home page
-         var id = _provision.Id;
-         NavigationManager.NavigateTo("$/owners/{id}");
+         var id = _provision.Id!;
+         NavigationManager.NavigateTo($"/owners/{id}");
       }
    }
 

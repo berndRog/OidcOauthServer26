@@ -1,11 +1,18 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="app-container">
-
+<header>
   <TopMenu />
+</header>
 
-  <main class="container mt-4">
-    @Body
-  </main>
 
-</div>
+<main class="app-main py-3">
+  @Body
+</main>
+
+<footer class="text-muted small py-2">
+  <div class="app-main border-top pt-2">
+    © @DateTime.Now.Year - Banking
+  </div>
+</footer>
+
+

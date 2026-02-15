@@ -1,10 +1,9 @@
 @using System.Diagnostics.CodeAnalysis
-@using Microsoft.AspNetCore.Components.Forms
 
-@inherits InputBase<string>
+@inherits InputBase<int>
 
 <div class="form-floating mb-3">
-    <input type="@Type" 
+    <input type="number" 
            class="form-control @CssClass" 
            id="@Id" 
            placeholder="@Placeholder" 
@@ -19,19 +18,27 @@
   [Parameter] public string Id { get; set; } = string.Empty;
   [Parameter] public string Label { get; set; } = string.Empty;
   [Parameter] public string Placeholder { get; set; } = string.Empty;
-  [Parameter] public string Type { get; set; } = "text";
-
+  
+  // Type defaults to "number" for int
+  
   protected override bool TryParseValueFromString(
     string? value, 
-    out string result, 
+    out int result, 
     [NotNullWhen(false)] out string? validationErrorMessage
   ) {
-    result = value ?? string.Empty;
-    validationErrorMessage = null;
-    return true;
+    if (int.TryParse(value, out result))
+    {
+        validationErrorMessage = null;
+        return true;
+    }
+    
+    result = 0;
+    validationErrorMessage = "Der eingegebene Wert ist keine gültige Zahl.";
+    return false;
   }
   
   private void OnInput(ChangeEventArgs e) {
-    CurrentValueAsString = e.Value?.ToString() ?? string.Empty;
+    // CurrentValueAsString triggers parsing
+    CurrentValueAsString = e.Value?.ToString();
   }
 }

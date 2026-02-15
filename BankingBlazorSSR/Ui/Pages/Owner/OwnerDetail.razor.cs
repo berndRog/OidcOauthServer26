@@ -13,7 +13,7 @@ public partial class OwnerDetail { // dont use : BasePage here
    
    [Parameter] public Guid Id { get; set; }
 
-   private OwnerDto _ownerDto;
+   private OwnerDto _ownerDto = default!;
    private List<AccountDto> _accountDtos;
    private string? _errorMessage = null;
    

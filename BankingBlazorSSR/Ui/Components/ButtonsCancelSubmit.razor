@@ -1,0 +1,44 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+
+<div class="form-actions">
+
+  <!-- Abbrechen -->
+  <button type="button"
+          class="btn btn-outline-secondary action-btn"
+          @onclick="HandleCancel">
+    Abbrechen
+  </button>
+
+  <!-- Speichern / Senden -->
+  <button type="@SubmitType"
+          class="btn btn-primary action-btn"
+          @onclick="HandleSubmit"
+          disabled="@DisabledSubmit">
+    @SubmitText
+  </button>
+
+</div>
+
+@code {
+  [Parameter] public EventCallback OnSubmit { get; set; }
+  [Parameter] public EventCallback OnCancel { get; set; }
+
+  [Parameter] public string SubmitType { get; set; } = "submit";
+  [Parameter] public string SubmitText { get; set; } = "Speichern";
+  [Parameter] public bool DisabledSubmit { get; set; }
+
+  private async Task HandleSubmit() {
+    if (OnSubmit.HasDelegate)
+      await OnSubmit.InvokeAsync();
+    // sonst übernimmt EditForm OnValidSubmit
+  }
+
+  private async Task HandleCancel() {
+    if (OnCancel.HasDelegate)
+      await OnCancel.InvokeAsync();
+    else
+      await JS.InvokeVoidAsync("blazorBack");
+  }
+
+}

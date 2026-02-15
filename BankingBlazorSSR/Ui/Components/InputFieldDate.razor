@@ -3,18 +3,16 @@
 @typeparam TValue where TValue : struct 
 @* Ensure TValue is a value type (non-nullable) *@
 
-<div class="form-group row">
-  <label for="@Id" class="col-3 col-form-label">@Label</label>
-  <div class="col-9">
+<div class="form-floating mb-3">
     <input type="text" class="form-control" 
            id="@Id" 
            placeholder="@Placeholder"
            @bind="FormattedValue" 
            @oninput="OnValueChanged"/>
+    <label for="@Id">@Label</label>
     @if (!string.IsNullOrEmpty(_errorMessage)) {
-      <div class="text-danger">@_errorMessage</div>
+      <div class="text-danger small">@_errorMessage</div>
     }
-  </div>
 </div>
 
 @code {

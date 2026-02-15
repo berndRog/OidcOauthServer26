@@ -2,20 +2,18 @@
 
 @typeparam TValue where TValue : struct 
 
-<div class="form-group row">
-  <label for="@Id" class="col-3 col-form-label">@Label</label>
-  <div class="col-9">
+<div class="form-floating mb-3">
     <input type="text" class="form-control @(HasError ? "is-invalid" : "")"
            id="@Id"
            placeholder="@Placeholder"
            value="@RawInputValue"
            @oninput="OnValueChanged"
            @onblur="FormatValue"/>
+    <label for="@Id">@Label</label>
 
     @if (HasError) {
       <div class="invalid-feedback">@ErrorMessage</div>
     }
-  </div>
 </div>
 
 @code {

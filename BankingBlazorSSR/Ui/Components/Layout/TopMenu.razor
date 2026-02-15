@@ -1,13 +1,18 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager Nav
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-  <div class="container-fluid">
+<nav>
+  <div class="app-main navbar navbar-expand-sm navbar-light bg-light border-top border-bottom py-2">
 
     <a class="navbar-brand fw-bold" href="/">SuderBank</a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topmenu"
-            aria-controls="topmenu" aria-expanded="false" aria-label="Toggle navigation">
+    <!-- Hamburger erscheint nur < 576px -->
+    <button class="navbar-toggler ms-auto" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#topmenu"
+            aria-controls="topmenu"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -16,51 +21,42 @@
       <AuthorizeView Context="auth">
         <Authorized>
 
-          <ul class="navbar-nav me-auto">
-
+          <ul class="navbar-nav">
             @if (auth.User.IsInRole("Owner"))
             {
-              <li class="nav-item">
-                <NavLink class="nav-link" href="/owner">Dashboard</NavLink>
-              </li>
-              <li class="nav-item">
-                <NavLink class="nav-link" href="/accounts">Konten</NavLink>
-              </li>
-              <li class="nav-item">
-                <NavLink class="nav-link" href="/transfers">Überweisungen</NavLink>
-              </li>
+              <li class="nav-item"><NavLink class="nav-link" href="/owner">Dashboard</NavLink></li>
+              <li class="nav-item"><NavLink class="nav-link" href="/accounts">Konten</NavLink></li>
+              <li class="nav-item"><NavLink class="nav-link" href="/transfers">Überweisungen</NavLink></li>
             }
 
             @if (auth.User.IsInRole("Employee"))
             {
-              <li class="nav-item">
-                <NavLink class="nav-link" href="/admin">Admin</NavLink>
-              </li>
-              <li class="nav-item">
-                <NavLink class="nav-link" href="/owners">Owners</NavLink>
-              </li>
+              <li class="nav-item"><NavLink class="nav-link" href="/admin">Admin</NavLink></li>
+              <li class="nav-item"><NavLink class="nav-link" href="/owners">Owners</NavLink></li>
             }
-
           </ul>
 
-          <a class="btn btn-outline-danger btn-sm" href="@LogoutUrl">Abmelden</a>
+          <a class="btn btn-outline-danger btn-sm ms-sm-auto mt-2 mt-sm-0" href="@LogoutUrl">
+            Abmelden
+          </a>
 
         </Authorized>
 
         <NotAuthorized>
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <NavLink class="nav-link" href="/">Start</NavLink>
-            </li>
+          <ul class="navbar-nav">
+            <li class="nav-item"><NavLink class="nav-link" href="/">Start</NavLink></li>
           </ul>
 
-          <a class="btn btn-primary btn-sm" href="@LoginUrl">Anmelden</a>
+          <a class="btn btn-primary btn-sm ms-sm-auto mt-2 mt-sm-0" href="@LoginUrl">
+            Anmelden
+          </a>
         </NotAuthorized>
       </AuthorizeView>
 
     </div>
   </div>
 </nav>
+
 
 @code {
   // Login mit ReturnUrl (aktuelle Seite)

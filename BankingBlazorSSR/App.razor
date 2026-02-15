@@ -19,7 +19,23 @@
 <body>
 <Routes @rendermode="InteractiveServer"/>
 <ReconnectModal/>
+
+<!-- Bootstrap JS (für Navbar-Collapse/Hamburger) -->
+<script src="@Assets["lib/bootstrap/dist/js/bootstrap.bundle.min.js"]"></script>
+
+<!-- Blazor -->
 <script src="@Assets["_framework/blazor.web.js"]"></script>
+
+<!-- Hilfsfunktion für "Zurück"-Buttons -->
+<script>   
+  window.blazorBack = () => {
+    if (history.length > 1)
+      history.back();
+    else
+      location.href = "/";
+  }; 
+</script>
 </body>
+
 
 </html>

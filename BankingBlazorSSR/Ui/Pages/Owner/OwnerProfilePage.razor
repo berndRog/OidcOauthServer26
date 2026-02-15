@@ -1,7 +1,4 @@
 @page "/owners/profile"
-@using Microsoft.AspNetCore.Authorization
-@using System.ComponentModel.DataAnnotations
-@using BankingBlazorSsr.Api.Clients
 @inherits BankingBlazorSsr.Ui.Common.BasePage
 
 @* @attribute [Authorize] *@
@@ -36,34 +33,31 @@
             <!-- Basisdaten -->
             <div class="card shadow-sm mb-3">
                 <div class="card-body">
-                    <h2 class="h6 text-uppercase text-muted mb-3">Basis</h2>
-
+                    //<h2 class="h6 text-uppercase text-muted mb-3">Basis</h2>
                     <div class="row g-3">
+                        <!-- Vorname: 50% width (on desktop) -->
                         <div class="col-md-6">
-                            <div class="form-floating">
-                                <InputText @bind-Value="_ownerDto.Firstname" class="form-control"/>
-                                <label>Vorname</label>
-                            </div>
-                            <ValidationMessage For="@(() => _ownerDto.Firstname)" class="text-danger small"/>
+                            <InputFieldString Id="firstname"
+                                              Label="Vorname"
+                                              @bind-Value="_ownerDto.Firstname"
+                                              Placeholder="dein Vorname ..."/>
                         </div>
-
+                        <!-- Vorname: 50% width on desktop -->
                         <div class="col-md-6">
-                            <div class="form-floating">
-                                <InputText @bind-Value="_ownerDto.Lastname" class="form-control"/>
-                                <label>Nachname</label>
-                            </div>
-                            <ValidationMessage For="@(() => _ownerDto.Lastname)" class="text-danger small"/>
+                            <InputFieldString Id="lastname"
+                                              Label="Nachname"
+                                              @bind-Value="_ownerDto.Lastname"
+                                              Placeholder="dein Nachname ..."/>
                         </div>
-
                         <div class="col-12">
-                            <div class="form-floating">
-                                <InputText @bind-Value="_ownerDto.Email" class="form-control"/>
-                                <label>E-Mail</label>
-                            </div>
-                            <ValidationMessage For="@(() => _ownerDto.Email)" class="text-danger small"/>
-                            <div class="form-text">
-                                Diese E-Mail stammt aus dem Login und kann angepasst werden.
-                            </div>
+                            <InputFieldString Id="email" 
+                                              Label="E-Mail" 
+                                              Placeholder="E-Mail" 
+                                              Type="email"
+                                              @bind-Value="_ownerDto.Email"/>
+                            @* <div class="form-text mt-0"> *@
+                            @*     Diese E-Mail stammt aus dem Login und kann angepasst werden. *@
+                            @* </div> *@
                         </div>
                     </div>
                 </div>
@@ -76,35 +70,31 @@
 
                     <div class="row g-3">
                         <div class="col-12">
-                            <div class="form-floating">
-                                <InputText @bind-Value="_ownerDto.Street" class="form-control"/>
-                                <label>Straße</label>
-                            </div>
-                            <ValidationMessage For="@(() => _ownerDto.Street)" class="text-danger small"/>
+                            <InputFieldString Id="street" 
+                                              Label="Straße" 
+                                              Placeholder="Straße"
+                                              @bind-Value="_ownerDto.Street"/>
                         </div>
 
                         <div class="col-md-4">
-                            <div class="form-floating">
-                                <InputText @bind-Value="_ownerDto.PostalCode" class="form-control"/>
-                                <label>PLZ</label>
-                            </div>
-                            <ValidationMessage For="@(() => _ownerDto.PostalCode)" class="text-danger small"/>
+                            <InputFieldString Id="zip" 
+                                              Label="PLZ" 
+                                              Placeholder="PLZ"
+                                              @bind-Value="_ownerDto.PostalCode"/>
                         </div>
 
                         <div class="col-md-8">
-                            <div class="form-floating">
-                                <InputText @bind-Value="_ownerDto.City" class="form-control"/>
-                                <label>Ort</label>
-                            </div>
-                            <ValidationMessage For="@(() => _ownerDto.City)" class="text-danger small"/>
+                            <InputFieldString Id="city" 
+                                              Label="Ort" 
+                                              Placeholder="Ort"
+                                              @bind-Value="_ownerDto.City"/>
                         </div>
 
                         <div class="col-md-6">
-                            <div class="form-floating">
-                                <InputText @bind-Value="_ownerDto.Country" class="form-control"/>
-                                <label>Land</label>
-                            </div>
-                            <ValidationMessage For="@(() => _ownerDto.Country)" class="text-danger small"/>
+                            <InputFieldString Id="country"
+                                              Label="Land" 
+                                              Placeholder="Land"
+                                              @bind-Value="_ownerDto.Country"/>
                         </div>
                     </div>
 
@@ -117,15 +107,9 @@
                         <div class="alert alert-success" role="alert">@_saveOk</div>
                     }
 
-                    <div class="d-flex gap-2 justify-content-end">
-                        <button type="button" class="btn btn-outline-secondary" @onclick="Cancel">
-                            Abbrechen
-                        </button>
-
-                        <button type="submit" class="btn btn-primary" disabled="@_saving">
-                            @(_saving ? "Speichern …" : "Speichern")
-                        </button>
-                    </div>
+                    <ButtonsCancelLeaveSubmit
+                        OnSubmit="SaveAsync"
+                        OnCancel="Cancel"/>
                 </div>
             </div>
         </EditForm>

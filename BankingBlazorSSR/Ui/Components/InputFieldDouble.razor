@@ -1,0 +1,44 @@
+@using System.Globalization
+
+<div class="form-floating mb-3">
+    <input type="text" class="form-control" 
+           id="@Id" 
+           placeholder="@Placeholder"
+           @bind="FormattedValue" 
+           @oninput="OnValueChanged"/>
+    <label for="@Id">@Label</label>
+    @if (!string.IsNullOrEmpty(_errorMessage)) {
+      <div class="text-danger small">@_errorMessage</div>
+    }
+</div>
+
+@code {
+  [Parameter] public string Id { get; set; } = string.Empty;
+  [Parameter] public string Label { get; set; } = string.Empty;
+  [Parameter] public string Placeholder { get; set; } = string.Empty;
+  [Parameter] public double Value { get; set; }
+  [Parameter] public EventCallback<double> ValueChanged { get; set; }
+  
+  // Optional: Minimum/Maximum validation can be added here if needed, similar to MustBeInFuture
+
+  private string _errorMessage = string.Empty;
+
+  private async Task OnValueChanged(ChangeEventArgs e) {
+    // We must update the FormattedValue manually because @oninput prevents @bind's default behavior effectively or we want immediate feedback
+    // In InputFieldDate, they did: FormattedValue = e.Value?.ToString() ?? string.Empty;
+    // This triggers the setter of FormattedValue which does the parsing logic!
+    
+    // So let's align with that pattern to ensure consistency.
+    FormattedValue = e.Value?.ToString() ?? string.Empty;
+    await ValueChanged.InvokeAsync(Value);
+  }
+
+  private string FormattedValue {
+    get => Value.ToString("N2", CultureInfo.CurrentCulture);
+    set {
+      if (double.TryParse(value, NumberStyles.Any, CultureInfo.CurrentCulture, out var parsedValue)) {
+          Value = parsedValue;
+      }
+    }
+  }
+}
