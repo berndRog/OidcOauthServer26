@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using BankingBlazorSsr.Api.Auth;
 using BankingBlazorSsr.Api.Errors;
 using BankingBlazorSsr.Core;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,14 @@ public abstract class BaseApiClient<TClient>(
 
       try {
          response = await send();
+      }
+      catch (ApiUnauthorizedException) {
+         // Token expired/invalid (detected centrally in AccessTokenHandler)
+         return Result<T>.Failure(new ApiError(
+            Status: 401,
+            Title: "Unauthorized",
+            Detail: "Session expired. Please login again."
+         ));
       }
       catch (OperationCanceledException ex) {
          _logger.LogWarning(ex, "Request canceled.");

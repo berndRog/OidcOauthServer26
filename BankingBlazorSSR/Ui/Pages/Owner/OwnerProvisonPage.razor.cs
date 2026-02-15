@@ -30,6 +30,7 @@ public partial class OwnerProvisonPage { // dont't use : BasePage here
       // BasePage state
       Loading = true; 
       ErrorMessage = null; 
+      Logger.LogInformation("OwnerProvisionPage: OnInitializedAsync");
       
       // Get tokens and decode them to display in the UI for demonstration purposes.
       // In a real application, you might not want to do this.
@@ -42,11 +43,14 @@ public partial class OwnerProvisonPage { // dont't use : BasePage here
       // 1) ID-Token Claims auslesen
       var authState = await AuthStateProvider.GetAuthenticationStateAsync();
       var user = authState.User;
-
+      Logger.LogInformation("User Identity: {@Identity}", user?.Identity);
+      
       _idTokenClaims = user?.Identity?.IsAuthenticated == true
          ? user.Claims.Select(c => (c.Type, c.Value)).ToList()
          : new List<(string Type, string Value)>();
 
+      Logger.LogInformation("ID Token Claims: {@Claims}", _idTokenClaims);
+      
       // 2) Provision
       var resultProvision = await Client.PostProvisionAsync(CancellationToken.None);
       if (resultProvision.IsFailure) {

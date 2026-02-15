@@ -220,41 +220,54 @@ public static class Program {
          })
 
          // Server
-         .AddServer(o => {
+         .AddServer(options => {
             // Issuer / Authority
-            o.SetIssuer(new Uri(auth.IssuerUri, UriKind.Absolute));
+            options
+               .SetIssuer(new Uri(auth.IssuerUri, UriKind.Absolute));
 
             // Endpoints as paths
-            o.SetAuthorizationEndpointUris("/" + AuthServerOptions.AuthorizationEndpointPath)
+            options
+               .SetAuthorizationEndpointUris("/" + AuthServerOptions.AuthorizationEndpointPath)
                .SetTokenEndpointUris("/" + AuthServerOptions.TokenEndpointPath)
                .SetUserInfoEndpointUris("/" + AuthServerOptions.UserInfoEndpointPath)
                .SetEndSessionEndpointUris("/" + AuthServerOptions.LogoutEndpointPath)
                .SetConfigurationEndpointUris("/" + AuthServerOptions.ConfigurationEndpointPath);
 
             // Flows
-            o.AllowAuthorizationCodeFlow()
-               .AllowClientCredentialsFlow();
+            options
+               .AllowAuthorizationCodeFlow()
+               .AllowClientCredentialsFlow()
+               .AllowRefreshTokenFlow();
 
             // PKCE required for public clients
-            o.RequireProofKeyForCodeExchange();
+            options
+               .RequireProofKeyForCodeExchange();
+            
+            // Token lifetimes
+            options
+               .SetAccessTokenLifetime(TimeSpan.FromMinutes(30));
+            options.SetAccessTokenLifetime(TimeSpan.FromMinutes(5));
+            
 
             // Scopes (standard + configured API scopes)
-            o.RegisterScopes(
-               new[] { "openid", "profile" }
-                  .Concat(auth.Apis.Values.Select(a => a.Scope))
-                  .Distinct(StringComparer.Ordinal)
-                  .ToArray()
-            );
+            options
+               .RegisterScopes(
+                  new[] { "openid", "profile", "offline_access" }
+                     .Concat(auth.Apis.Values.Select(a => a.Scope))
+                     .Distinct(StringComparer.Ordinal)
+                     .ToArray()
+               );
             
             // Dev certs
-            o.AddDevelopmentEncryptionCertificate()
+            options
+               .AddDevelopmentEncryptionCertificate()
                .AddDevelopmentSigningCertificate();
 
             if (!auth.Tokens.EncryptAccessTokens)
-               o.DisableAccessTokenEncryption();
+               options.DisableAccessTokenEncryption();
 
             // ASP.NET Core integration
-            o.UseAspNetCore()
+            options.UseAspNetCore()
                .EnableAuthorizationEndpointPassthrough()
                .EnableTokenEndpointPassthrough()
                .EnableUserInfoEndpointPassthrough()
