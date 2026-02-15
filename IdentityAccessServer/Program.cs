@@ -97,7 +97,7 @@ public static class Program {
          app.UseHttpLogging(); // only in dev
       }
 
-      app.UseHttpsRedirection();
+      //app.UseHttpsRedirection();
       app.UseStaticFiles();
 
       app.UseRouting();

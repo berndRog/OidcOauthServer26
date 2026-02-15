@@ -35,7 +35,7 @@ public sealed class ApplicationUser : IdentityUser {
    /// - owner: self-registered, needs activation by employee (has Status field)
    /// - employee: managed account with AdminRights
    /// </summary>
-   public string AccountType { get; set; } = "customer";
+   public string AccountType { get; set; } = "owner";
    
    // ------------------------------------------------------------------
    // Administrative rights (bitmask)

@@ -1,10 +1,7 @@
-using BankingBlazorSsr.Api.Clients;
 using BankingBlazorSsr.Api.Contracts;
 using BankingBlazorSsr.Api.Dtos;
-using BankingBlazorSsr.Ui.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-
 namespace BankingBlazorSsr.Ui.Pages.Owner;
 
 /// <summary>

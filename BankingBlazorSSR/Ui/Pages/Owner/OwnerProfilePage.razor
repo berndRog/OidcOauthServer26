@@ -9,10 +9,7 @@
 
 <div class="container py-4" style="max-width: 860px;">
     <div class="mb-3">
-        <h1 class="h3 mb-1">Kundenprofil</h1>
-        <div class="text-muted">
-            Bitte vervollständige deine Profildaten.
-        </div>
+        <h1 class="h3 mb-1">Profil Kontoinhaber</h1>
     </div>
 
     @if (Loading) {
@@ -29,11 +26,9 @@
                     <ValidationSummary/>
                 </div>
             }
-
             <!-- Basisdaten -->
             <div class="card shadow-sm mb-3">
                 <div class="card-body">
-                    //<h2 class="h6 text-uppercase text-muted mb-3">Basis</h2>
                     <div class="row g-3">
                         <!-- Vorname: 50% width (on desktop) -->
                         <div class="col-md-6">
@@ -66,8 +61,7 @@
             <!-- Adresse -->
             <div class="card shadow-sm mb-3">
                 <div class="card-body">
-                    <h2 class="h6 text-uppercase text-muted mb-3">Adresse (optional)</h2>
-
+                    <h2 class="h6 text-muted mb-3">Adresse (optional)</h2>
                     <div class="row g-3">
                         <div class="col-12">
                             <InputFieldString Id="street" 
@@ -97,9 +91,7 @@
                                               @bind-Value="_ownerDto.Country"/>
                         </div>
                     </div>
-
-                    <hr class="my-4"/>
-
+                    
                     @if (!string.IsNullOrWhiteSpace(_saveError)) {
                         <div class="alert alert-danger" role="alert">@_saveError</div>
                     }
@@ -107,9 +99,11 @@
                         <div class="alert alert-success" role="alert">@_saveOk</div>
                     }
 
-                    <ButtonsCancelLeaveSubmit
-                        OnSubmit="SaveAsync"
-                        OnCancel="Cancel"/>
+                    <div class="d-flex justify-content-center mt-3">
+                        <ButtonsCancelLeaveSubmit
+                            OnSubmit="SaveAsync"
+                            OnCancel="Cancel" />
+                    </div>
                 </div>
             </div>
         </EditForm>

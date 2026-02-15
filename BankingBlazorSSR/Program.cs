@@ -185,24 +185,13 @@ public sealed class Program {
 
             // Authorization Code Flow
             options.ResponseType = OpenIdConnectResponseType.Code;
-
+            options.UsePkce = true;
+            
             // Callback endpoints in this SSR app
             options.CallbackPath = auth["CallbackPath"] ?? "/signin-oidc";
             options.SignedOutCallbackPath =
                auth["SignedOutCallbackPath"] ?? "/signout-callback-oidc";
             options.SignedOutRedirectUri = "/";   // 
-
-            
-            // Console.WriteLine($"CallbackPath={options.CallbackPath}, SignedOutCallbackPath={options.SignedOutCallbackPath}");
-            //
-            // options.Events ??= new OpenIdConnectEvents();
-            // options.Events.OnSignedOutCallbackRedirect = context => {
-            //    // Final UX destination after the technical callback
-            //    context.Response.Redirect("/");
-            //    context.HandleResponse();
-            //    return Task.CompletedTask;
-            // };
-
             
             // Keep tokens in the auth session (cookie ticket)
             options.SaveTokens = true;
@@ -214,6 +203,7 @@ public sealed class Program {
             options.Scope.Clear();
             options.Scope.Add("openid");
             options.Scope.Add("profile");
+            options.Scope.Add("offline_access"); // for refresh tokens
             options.Scope.Add(auth["ApiScope"] ?? "banking_api");
 
             // Map name and roles to your claim types

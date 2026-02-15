@@ -145,8 +145,12 @@ public sealed class SeedHostedService(
       }; 
 
       // Choose which APIs Blazor may call:
+      AddApiScopes(blazor, "BankingApi"); // add more if needed
       AddApiScopes(blazor, "CarRentalApi"); // add more if needed
-
+      
+      // Blazor WASM may use refresh tokens (with PKCE + Authorization Code)
+      AllowRefreshTokens(blazor); 
+      
       await UpsertAsync(blazor, requiresSecret: false);
 
       // ------------------------------------------------------------
@@ -173,9 +177,11 @@ public sealed class SeedHostedService(
             Permissions.Prefixes.Scope + Scopes.Profile
          }
       };
-
-      // MVC: for your current test, at least CarRentalApi:
+      
+      AddApiScopes(webMvc, "BankingApi");
       AddApiScopes(webMvc, "CarRentalApi");
+      
+      AllowRefreshTokens(webMvc); // optional, but common for server-side apps
 
       await UpsertAsync(webMvc, requiresSecret: true);
 
@@ -205,6 +211,9 @@ public sealed class SeedHostedService(
       };
 
       AddApiScopes(webBlazorSsr, "BankingApi");
+      AddApiScopes(webBlazorSsr, "CarRentalApi");
+      
+      AllowRefreshTokens(webBlazorSsr); 
 
       await UpsertAsync(webBlazorSsr, requiresSecret: true);
       
@@ -241,7 +250,10 @@ public sealed class SeedHostedService(
          }
       };
 
-      AddApiScopes(android, "CarRentalApi"); // plus Banking/Images later as needed
+      AddApiScopes(android, "BankingApi"); 
+      AddApiScopes(android, "CarRentalApi"); 
+      
+      AllowRefreshTokens(android); // optional, but common for mobile apps
 
       await UpsertAsync(android, requiresSecret: false);
 
@@ -267,6 +279,13 @@ public sealed class SeedHostedService(
    }
 
    public Task StopAsync(CancellationToken ct) => Task.CompletedTask;
+   
+   private void AllowRefreshTokens(OpenIddictApplicationDescriptor descriptor) {
+      descriptor.Permissions
+         .Add(Permissions.GrantTypes.RefreshToken);
+      descriptor.Permissions
+         .Add(Permissions.Prefixes.Scope + Scopes.OfflineAccess);
+   }
 }
 
 /*
