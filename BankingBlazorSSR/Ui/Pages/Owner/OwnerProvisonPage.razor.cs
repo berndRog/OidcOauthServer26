@@ -3,6 +3,7 @@ using System.Text.Json;
 using BankingBlazorSsr.Api.Clients;
 using BankingBlazorSsr.Api.Contracts;
 using BankingBlazorSsr.Api.Dtos;
+using BankingBlazorSsr.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -10,7 +11,8 @@ namespace BankingBlazorSsr.Ui.Pages.Owner;
 
 public partial class OwnerProvisonPage { // dont't use : BasePage here
 
-   [Inject] private IOwnerClient Client { get; set; } = default!;
+   [Inject] private IOwnerClient OwnerClient { get; set; } = default!;
+   [Inject] private IAccountClient AccountClient { get; set; } = default!;
    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
    [Inject] private IHttpContextAccessor HttpContextAccessor { get; set; } = default!;
@@ -52,7 +54,7 @@ public partial class OwnerProvisonPage { // dont't use : BasePage here
       Logger.LogInformation("ID Token Claims: {@Claims}", _idTokenClaims);
       
       // 2) Provision
-      var resultProvision = await Client.PostProvisionAsync(CancellationToken.None);
+      var resultProvision = await OwnerClient.PostProvisionAsync(CancellationToken.None);
       if (resultProvision.IsFailure) {
          HandleError(resultProvision.Error!);
          Loading = false;
@@ -63,10 +65,31 @@ public partial class OwnerProvisonPage { // dont't use : BasePage here
       Loading = false;
    }
 
-   private void ContinueToProfile() {
+   private async Task ContinueToProfileAsync() {
       // is the profile just provisioned? if so, navigate to profile page
-      if (_provision?.ShowProfile ?? false) {
+      if (_provision?.WasCreated ?? false) {
          Logger.LogInformation("Owner just provisioned");
+         
+         // Create an account for the owner (just for demonstration, normally this would be a separate step)
+         var iban = IbanGenerator.CreateGermanIban("DEXX 0001 0002 0003 1234 56");
+      
+         var ownerId = _provision.Id;
+         var accountDto = new AccountDto(
+            Id: _provision.Id,
+            Iban: iban,
+            Balance: 0.00m,
+            OwnerId: _provision.Id
+         );
+
+         //var resultAccount = await AccountClient.PostAsync(ownerId, accountDto, CancellationToken.None);
+         Logger.LogInformation("Account creation ownerId: {ownerId} accountDto", ownerId, accountDto);
+         
+         // if (resultAccount.IsFailure) {
+         //    HandleError(resultAccount.Error!);
+         //    Loading = false;
+         //    return;
+         // }
+         
          // profile must be shown to update it, navigate to profile page
          NavigationManager.NavigateTo("/owners/profile");
       }

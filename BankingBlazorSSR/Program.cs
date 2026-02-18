@@ -136,7 +136,11 @@ public sealed class Program {
          Converters = { new JsonStringEnumConverter() }
       });
       
-      //--- Typed HTTP client for the Banking API / Communication ----------------
+      //--- Typed HTTP client for the IA-Provider and Banking API / Communication ---
+      services.AddHttpClient("AuthServer", c => {
+         c.BaseAddress = new Uri(configuration["Auth:Authority"]!); // https://localhost:7010
+      });
+      
       // AccessTokenHandler attaches the access token to each request.
       services.AddTransient<AccessTokenHandler>();
 

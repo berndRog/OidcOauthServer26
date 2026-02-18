@@ -19,7 +19,7 @@ public partial class OwnerProfilePage {
    // Optional return URL (passed via query string)
    // After Save or Leave navigation returns here instead of fixed route
    [Parameter, SupplyParameterFromQuery]
-   public string? Return { get; set; }
+   public string? ReturnUrl { get; set; }
    // ---- UI State ------------------------------------------------------------
    private bool _saving;
    private bool _showGlobalErrors;
@@ -102,7 +102,7 @@ public partial class OwnerProfilePage {
    /// Leave = navigate away from page.
    /// Uses return URL if available.
    /// </summary>
-   private void GoBack() => Navigation.NavigateTo(Return ?? "/owners");
+   private void GoBack() => Navigation.NavigateTo(ReturnUrl ?? "/owners");
 
 
    // -------------------------------------------------------------------------
@@ -115,6 +115,8 @@ public partial class OwnerProfilePage {
       _saving = true;
       _saveError = null;
       _saveOk = null;
+      
+      Logger.LogDebug("Save owner profile: {@Profile}", _ownerDto);
 
       // Prevent API call if invalid
       if (!_editContext.Validate()) {
@@ -122,13 +124,9 @@ public partial class OwnerProfilePage {
          _saving = false;
          return;
       }
-
-      Logger.LogDebug("Update owner profile: {@Profile}", _ownerDto);
-
+      
       var result = await OwnerClient.UpdateProfileAsync(_ownerDto);
-
       if (result.IsFailure) {
-
          var err = result.Error!;
          Logger.LogWarning("Save failed {Status}: {Title}", err.Status, err.Title);
 

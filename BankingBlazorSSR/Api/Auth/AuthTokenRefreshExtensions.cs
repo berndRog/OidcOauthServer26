@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 public static class AuthTokenRefreshExtensions {
+   
    public static async Task<bool> TryRefreshAccessTokenAsync(
       this HttpContext httpContext,
       IHttpClientFactory httpClientFactory,
       IConfiguration config,
-      CancellationToken ct = default) {
+      CancellationToken ct = default
+   ) {
       // Read current auth ticket (cookie)
       var auth = await httpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
       if (!auth.Succeeded || auth.Properties is null)
@@ -25,11 +27,25 @@ public static class AuthTokenRefreshExtensions {
       if (!IsExpiringSoon(expiresAtRaw))
          return true;
 
-      var tokenEndpoint = config["Auth:TokenEndpoint"]; // z.B. https://localhost:5001/connect/token
-      var clientId = config["Auth:ClientId"]!;
-      var clientSecret = config["Auth:ClientSecret"]!;
+      // var tokenEndpoint = config["Auth:TokenEndpoint"]; // z.B. https://localhost:5001/connect/token
+      // var clientId = config["Auth:ClientId"]!;
+      // var clientSecret = config["Auth:ClientSecret"]!;
 
-      var http = httpClientFactory.CreateClient();
+      var tokenEndpointRaw = config["Auth:TokenEndpoint"];
+      if (string.IsNullOrWhiteSpace(tokenEndpointRaw))
+         throw new InvalidOperationException("Missing configuration: Auth:TokenEndpoint");
+      if (!Uri.TryCreate(tokenEndpointRaw, UriKind.Absolute, out var tokenEndpoint))
+         return false; // silent fail
+      
+      var clientId = config["Auth:ClientId"];
+      if (string.IsNullOrWhiteSpace(clientId))
+         throw new InvalidOperationException("Missing configuration: Auth:ClientId");
+
+      var clientSecret = config["Auth:ClientSecret"];
+      if (string.IsNullOrWhiteSpace(clientSecret))
+         throw new InvalidOperationException("Missing configuration: Auth:ClientSecret");
+      
+      var http = httpClientFactory.CreateClient("AuthServer");
 
       using var req = new HttpRequestMessage(HttpMethod.Post, tokenEndpoint);
       req.Content = new FormUrlEncodedContent(new Dictionary<string, string> {

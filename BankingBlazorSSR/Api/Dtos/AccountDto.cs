@@ -6,6 +6,6 @@
 public record AccountDto(
    Guid Id,
    string Iban,
-   double Balance,
+   decimal Balance,
    Guid OwnerId
 );
